@@ -72,6 +72,7 @@ class StateManager;
 class Domain
 {
 public:
+	static constexpr double _csInterfaceEmissionOffset = 0.001;
     Domain(unsigned num, Tcl_Interp *, const Coordinates &m, const Coordinates &M,
            std::vector<float> const * const aLinesX = nullptr, std::vector<float> const * const aLinesY = nullptr, std::vector<float> const * const aLinesZ = nullptr);
     void init(bool bFromStream); //is the simulation recreated from a stream?
@@ -79,9 +80,9 @@ public:
 	
 	float getVtkCellDecrement() const { return _vtkCellDecrement; }
 	void gatherVtkMaterialData(float const aGlobalVtkCellDecrement, VtkMaterialData &aData) const { _pMesh->gatherVtkMaterialData(aGlobalVtkCellDecrement, aData); }
-	std::vector<float> const& getLinesX() const { return _linesX; }
-	std::vector<float> const& getLinesY() const { return _linesY; }
-	std::vector<float> const& getLinesZ() const { return _linesZ; }
+	std::vector<float> const& getLinesX() const { return _pMesh->getLinesX(); }
+	std::vector<float> const& getLinesY() const { return _pMesh->getLinesY(); }
+	std::vector<float> const& getLinesZ() const { return _pMesh->getLinesZ(); }
 	M_TYPE getMaterial(Coordinates const& aWhere) const { return _pMesh->getMaterial(aWhere); }
     
     const LKMC::LatticeParam         *_pLaPar[MAX_MATERIALS];
@@ -96,9 +97,6 @@ public:
 
 	static constexpr double _CSvtkMinCellFrameFactor = 0.05;
 	double                  _vtkCellDecrement;    // Used to decrement MeshElement sizes in each direction during VTK export.
-	std::vector<float>      _linesX;
-	std::vector<float>      _linesY;
-	std::vector<float>      _linesZ;
 	Mesh           *_pMesh;
 	RateManager    *_pRM;
 

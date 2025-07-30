@@ -53,11 +53,15 @@ Domain::Domain(unsigned num, Tcl_Interp *pTcl, const Coordinates &m, const Coord
 	Coordinates mm = m, MM = M;
         NUTCreator nut(this, mm, MM, aLinesX, aLinesY, aLinesZ);
 	_pRM = new RateManager(this);
-	_linesX = nut.getLines(0);
-	_linesY = nut.getLines(1);
-	_linesZ = nut.getLines(2);
+
+	float const minLineStep = nut.getMinLine();
+	for(uint32_t i = 0u; i < Domains::global()->PM()->getNMaterials(); ++i) {
+		if(minLineStep <= _pMePar->_lambda[i] + _csInterfaceEmissionOffset) {
+			ERRORMSG("The minimal lines separation " << minLineStep << " <= " << _pMePar->_lambda[i] << " (the lambda value of material " << i << ") + " << _csInterfaceEmissionOffset);
+		}
+	}
 	_pMesh = new Mesh(this, mm, MM,
-		_linesX, _linesY, _linesZ,
+		nut.getLines(0), nut.getLines(1), nut.getLines(2),
 		Domains::global()->client());
 	_vtkCellDecrement = nut.getMinLine() * _CSvtkMinCellFrameFactor;
 		
